@@ -1,0 +1,30 @@
+# MPCFormer-Hawkeye
+
+This README file describes how to reproduce the model communication cost propfiling results from MPCFormer shown in Table 2, Table 3 and Figure 7 of the paper "HawkEye: Statically and Accurately Profiling the Communication Cost of Models in Multi-party Learning" (Usenix Security 2025).
+
+## Build the environment
+
+```
+virtualenv venv --python 3.8
+source ../venv/bin/activate
+export SKLEARN_ALLOW_DEPRECATED_SKLEARN_PACKAGE_INSTALL=True
+pip install --ignore-installed --no-deps -r requirements.txt
+```
+
+## Run profiling processes
+
+After runningthe following commands, `log_mpcformer_online.txt` would contain the online communication size, oline communication round and running time results from MPCFomer shown in Table 2, Table 3 and Figure 7 of the paper "HawkEye: Statically and Accurately Profiling the Communication Cost of Models in Multi-party Learning" (Usenix Security 2025).
+
+```
+cd src/benchmark/
+chmod +x run_online.sh
+./run_online.sh
+```
+
+
+After runningthe following commands, `log_mpcformer_online+offline.txt` would contain the total communication size results from MPCFomer. The offline communication size results shown in Table 2 can be obtained by subtracting the online communication size results from the total communication size results.
+
+```
+chmod +x run_online+offline.sh
+./run_online+offline.sh
+```

@@ -40,10 +40,18 @@ rank = sys.argv[1]
 os.environ["RANK"] = str(rank)
 os.environ["WORLD_SIZE"] = str(2)
 os.environ["MASTER_ADDR"] = "127.0.0.1"
-os.environ["MASTER_PORT"] = "29500"
+os.environ["MASTER_PORT"] = "29000"
 os.environ["RENDEZVOUS"] = "env://"
 cfg.communicator.verbose = True
-cfg.mpc.provider = "TFP"
+
+setting = sys.argv[2]
+print(setting)
+if setting == 0:
+    print(5445)
+    cfg.mpc.provider = "TFP"
+else:
+    cfg.mpc.provider = "TTP"
+    
 
 
 if int(rank) >1 :
@@ -51,8 +59,9 @@ if int(rank) >1 :
     # crypten.init()
     crypten.mpc.provider.TTPServer()
 else:
+    print(3542345423)
     crypten.init()
-
+    print(25234534)
     # setup fake data for timing purpose
     commInit = crypten.communicator.get().get_communication_stats()
     input_ids = F.one_hot(torch.randint(low=0, high=config.vocab_size, size=(config.batch_size, config.sequence_length)), config.vocab_size).float()
@@ -70,7 +79,9 @@ else:
         time_s = time.time()
         # run a forward pass
         with crypten.no_grad():
+            print(2352345)
             model(input_ids)
+            
 
         time_e = time.time()
         timing["total_time"] = (time_e - time_s)

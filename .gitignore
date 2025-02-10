@@ -171,5 +171,5 @@ tags
 # DS_Store (MacOS)
 .DS_Store
 
-*.txt
+
 *.out
