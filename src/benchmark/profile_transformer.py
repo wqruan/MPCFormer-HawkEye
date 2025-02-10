@@ -45,14 +45,8 @@ os.environ["RENDEZVOUS"] = "env://"
 cfg.communicator.verbose = True
 
 setting = sys.argv[2]
-print(setting)
-if setting == 0:
-    print(5445)
-    cfg.mpc.provider = "TFP"
-else:
-    cfg.mpc.provider = "TTP"
-    
 
+cfg.mpc.provider = "TFP" if int(setting) == 0 else "TTP"
 
 if int(rank) >1 :
     print(235445)
@@ -79,7 +73,6 @@ else:
         time_s = time.time()
         # run a forward pass
         with crypten.no_grad():
-            print(2352345)
             model(input_ids)
             
 
