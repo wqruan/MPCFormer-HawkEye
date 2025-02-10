@@ -17,9 +17,9 @@ def encrypt_tensor(input):
     src_id = 1
 
     if rank == src_id:
-        input_upd = input.cuda()
+        input_upd = input
     else:
-        input_upd = torch.empty(input.size()).cuda()
+        input_upd = torch.empty(input.size())
     private_input = crypten.cryptensor(input_upd, src=src_id)
 #    print(private_input)
     return private_input
@@ -29,12 +29,12 @@ def encrypt_model(model, modelFunc, config, dummy_input):
     
     # assumes party 0 is the actual model provider
     if rank == 0:
-        model_upd = model.cuda()
+        model_upd = model
     else:
         if isinstance(config, tuple):
-            model_upd = modelFunc(config[0], config[1]).cuda()
+            model_upd = modelFunc(config[0], config[1])
         else:
-            model_upd = modelFunc(config).cuda()
+            model_upd = modelFunc(config)
 
     private_model = model_upd.encrypt(src=0)
     return private_model

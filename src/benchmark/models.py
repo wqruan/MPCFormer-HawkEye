@@ -8,7 +8,7 @@ import crypten
 import crypten.nn as cnn
 import crypten.communicator as comm
 
-from utils import softmax_2RELU, activation_quad
+from utils import softmax_2RELU, activation_quad, activation_newGeLU
 
 class Bert(cnn.Module):
     def __init__(self, config, timing):
@@ -90,11 +90,10 @@ class BertEmbeddings(cnn.Module):
         self.timing["EmbedTime"] += (t1-t0)
         self.timing["EmbedCommTime"] += (comm1["time"] - comm0["time"])
         self.timing["ËmbedCommByte"] += (comm1["bytes"] - comm0["bytes"])
+        self.timing["ËmbedRound"] += (comm1["rounds"] - comm0["rounds"])
 
         position_embeddings = (self.position_embeddings.weight[:,:input_ids.shape[1]]).transpose(0,1)
-     #   print(position_embeddings.shape, self.position_embeddings.weight.shape)
         position_embeddings = position_embeddings.repeat(input_ids.shape[0],1,1)
-     #   print(position_embeddings.shape, embeddings.shape)
         embeddings += position_embeddings
 
         t0 = time.time()
@@ -107,6 +106,8 @@ class BertEmbeddings(cnn.Module):
         self.timing["NormTime"] += (t1-t0)
         self.timing["NormCommTime"] += (comm1["time"] - comm0["time"])
         self.timing["NormCommByte"] += (comm1["bytes"] - comm0["bytes"])
+        self.timing["NormRounds"] += (comm1["rounds"] - comm0["rounds"])
+        
         embeddings = self.dropout(embeddings)
         return embeddings
 
@@ -180,6 +181,7 @@ class BertSelfAttention(cnn.Module):
         self.timing["LinearTime"] += (t1 - t0)
         self.timing["LinearCommTime"] += (comm1["time"] - comm0["time"])
         self.timing["LinearCommByte"] += (comm1["bytes"] - comm0["bytes"])
+        self.timing["LinearRounds"] += (comm1["rounds"] - comm0["rounds"])
         
         t0 = time.time()
         comm0 = comm.get().get_communication_stats()
@@ -189,6 +191,7 @@ class BertSelfAttention(cnn.Module):
         self.timing["SoftmaxTime"] += (t1 - t0)
         self.timing["SoftmaxCommTime"] += (comm1["time"] - comm0["time"])
         self.timing["SoftmaxCommByte"] += (comm1["bytes"] - comm0["bytes"])
+        self.timing["SoftmaxRounds"] += (comm1["rounds"] - comm0["rounds"])
 
         attention_probs = self.dropout(attention_probs)
         
@@ -200,6 +203,7 @@ class BertSelfAttention(cnn.Module):
         self.timing["LinearTime"] += (t1 - t0)
         self.timing["LinearCommTime"] += (comm1["time"] - comm0["time"])
         self.timing["LinearCommByte"] += (comm1["bytes"] - comm0["bytes"])
+        self.timing["LinearRounds"] += (comm1["rounds"] - comm0["rounds"])
 
         context_layer = context_layer.permute(0, 2, 1, 3)#.contiguous()
         new_context_layer_shape = context_layer.size()[:-2] + (self.hidden_size,)
@@ -226,6 +230,7 @@ class BertSelfOutput(cnn.Module):
         self.timing["LinearTime"] += (t1 - t0)
         self.timing["LinearCommTime"] += (comm1["time"] - comm0["time"])
         self.timing["LinearCommByte"] += (comm1["bytes"] - comm0["bytes"])
+        self.timing["LinearRounds"] += (comm1["rounds"] - comm0["rounds"])
         
         hidden_states = self.dropout(hidden_states)
         # residual connection here
@@ -240,6 +245,8 @@ class BertSelfOutput(cnn.Module):
         self.timing["NormTime"] += (t1 - t0)
         self.timing["NormCommTime"] += (comm1["time"] - comm0["time"])
         self.timing["NormCommByte"] += (comm1["bytes"] - comm0["bytes"])
+        self.timing["NormRounds"] += (comm1["rounds"] - comm0["rounds"])
+        
         return hidden_states
 
 class BertIntermediate(cnn.Module):
@@ -249,7 +256,7 @@ class BertIntermediate(cnn.Module):
         if config.hidden_act == "relu":
             self.intermediate_act_fn = cnn.ReLU()
         elif config.hidden_act == "quad":
-            self.intermediate_act_fn = activation_quad()
+            self.intermediate_act_fn = activation_newGeLU()
         else:
             raise ValueError(f"activation type {config.hidden_act} not implemented")
         self.timing = timing
@@ -263,6 +270,7 @@ class BertIntermediate(cnn.Module):
         self.timing["LinearTime"] += (t1 - t0)
         self.timing["LinearCommTime"] += (comm1["time"] - comm0["time"])
         self.timing["LinearCommByte"] += (comm1["bytes"] - comm0["bytes"])
+        self.timing["LinearRounds"] += (comm1["rounds"] - comm0["rounds"])
         
         t0 = time.time()
         comm0 = comm.get().get_communication_stats()
@@ -272,6 +280,8 @@ class BertIntermediate(cnn.Module):
         self.timing["ActTime"] += (t1 - t0)
         self.timing["ActCommTime"] += (comm1["time"] - comm0["time"])
         self.timing["ActCommByte"] += (comm1["bytes"] - comm0["bytes"])
+        self.timing["ActRounds"] += (comm1["rounds"] - comm0["rounds"])
+        
         return hidden_states
 
 
@@ -294,6 +304,7 @@ class BertOutput(cnn.Module):
         self.timing["LinearTime"] += (t1 - t0)
         self.timing["LinearCommTime"] += (comm1["time"] - comm0["time"])
         self.timing["LinearCommByte"] += (comm1["bytes"] - comm0["bytes"])
+        self.timing["LinearRounds"] += (comm1["rounds"] - comm0["rounds"])
         hidden_states = self.dropout(hidden_states)
         # residual connection
         t0 = time.time()
@@ -307,4 +318,6 @@ class BertOutput(cnn.Module):
         self.timing["NormTime"] += (t1 - t0)
         self.timing["NormCommTime"] += (comm1["time"] - comm0["time"])
         self.timing["NormCommByte"] += (comm1["bytes"] - comm0["bytes"])
+        self.timing["NormRounds"] += (comm1["rounds"] - comm0["rounds"])
+        
         return hidden_states
