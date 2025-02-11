@@ -1,6 +1,6 @@
 # MPCFormer-Hawkeye
 
-This README file describes how to reproduce the model communication cost propfiling results from MPCFormer shown in Table 2, Table 3 and Figure 7 of the paper "HawkEye: Statically and Accurately Profiling the Communication Cost of Models in Multi-party Learning" (Usenix Security 2025).
+This README file describes how to reproduce the model communication cost profiling results from MPCFormer shown in Table 2, Table 3, and Figure 7 of the paper "HawkEye: Statically and Accurately Profiling the Communication Cost of Models in Multi-party Learning" (Usenix Security 2025).
 
 ## Build the environment
 
@@ -13,7 +13,7 @@ pip install -r requirements.txt
 
 ## Run profiling processes
 
-After runningthe following commands, `log_mpcformer_online.txt` would contain the online communication size, oline communication round and running time results from MPCFomer shown in Table 2, Table 3 and Figure 7 of the paper "HawkEye: Statically and Accurately Profiling the Communication Cost of Models in Multi-party Learning" (Usenix Security 2025). It takes about ten minutes.
+After running the following commands, `log_mpcformer_online.txt` would contain the online communication size, online communication round, and running time results from MPCFomer shown in Table 2, Table 3, and Figure 7 of the paper "HawkEye: Statically and Accurately Profiling the Communication Cost of Models in Multi-party Learning" (Usenix Security 2025). It takes about ten minutes.
 
 ```
 cd src/benchmark/
@@ -22,7 +22,7 @@ chmod +x run_online.sh
 ```
 
 
-After runningthe following commands, `log_mpcformer_online+offline.txt` would contain the total communication size results from MPCFomer. The offline communication size results shown in Table 2 can be obtained by subtracting the online communication size results from the total communication size results. It takes about ten minutes.
+After running the following commands, `log_mpcformer_online+offline.txt` will contain the total communication size results from MPCFomer. The offline communication size results shown in Table 2 can be obtained by subtracting the online communication size results from the total communication size results. It takes about ten minutes.
 
 ```
 chmod +x run_online+offline.sh
