@@ -6,7 +6,7 @@ This README file describes how to reproduce the model communication cost profili
 
 ```
 virtualenv venv --python 3.8
-source ../venv/bin/activate
+source venv/bin/activate
 export SKLEARN_ALLOW_DEPRECATED_SKLEARN_PACKAGE_INSTALL=True
 pip install -r requirements.txt
 ```
